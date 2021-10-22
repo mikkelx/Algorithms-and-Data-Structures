@@ -46,18 +46,18 @@ public:
     void insertSorted(int x);                //wstawia element x z zachowaniem porządku niemalejącego
 };
 
-int main() 
+int main()
 {
-	//Zadanie 1 - test
-	cout << endl << "Zadanie 1 oraz 2 - test" << endl;
-	 //przykładowy sposób testowania
-    //cout << endl << " " << ;
+    //Zadanie 1 - test
+    cout << endl << "Zadanie 1 oraz 2 - test" << endl;
+    //przykładowy sposób testowania
+   //cout << endl << " " << ;
     ArrayList a(5);
     ArrayList b(8);
     cout << endl << "a empty() 1 - " << a.empty();
     cout << endl << "a full(): 0 - " << a.full();
     cout << endl << "a getSize(): 0 - " << a.getSize();
-    cout << endl << "a append(4): 4 - "; 
+    cout << endl << "a append(4): 4 - ";
     a.append(4); cout << " " << a;
     cout << endl << "a get capacity 5 - " << a.getCapacity();
     cout << endl << "b get capacity 8 - " << a.getCapacity();
@@ -67,10 +67,25 @@ int main()
     cout << endl << "a getNext 2 " << a.getNext(1);
     cout << endl << "a getPrev 0 " << a.getPrev(1);
     cout << endl << "a getNext -1 " << a.getNext(4);
+    cout << endl << "a del(2) 4, 3, 1 -  " << a.del(2);
+    cout << " " << a;
+    cout << endl << "a prepend(5) - 5,4,3,1 - "; a.preppend(5); cout << " " << a;
+    cout << endl << "a insert(2, 6) 5,4,6,3,1 - " << a.insert(2,6); cout << " " << a;
+    cout << endl << "a retrieve(2) 6 - " << a.retrieve(2);
+    cout << endl << "b append 9,8,7 - "; b.append(9); b.append(8); b.append(7);
+    cout << " " << b;
+    cout << endl << "b size 3 - " << b.getSize();
+    cout << endl << "b.concat(a) 9,8,7,5,4,6,3,1 - " << b.concat(a);
+    cout << " " << b;
+    cout << endl << "b locate(1) 7 - " << b.locate(1);
+    cout << endl << "b deleteX(1) 1 - " << b.deleteX(1);
+    cout << " " << b;
+    cout << endl << "b append 9 - "; b.append(9); cout << " " << b;
+    cout << endl << "b deleteAllX(9) 8,7,5,4,6,3 - " << b.deleteAllX(9);
+    cout << " " << b;
+    cout << endl << "b clear - "; b.clear(); cout << " " << b;
 
-
-
-	return 0;
+    return 0;
 }
 
 ArrayList::ArrayList(int c) {
@@ -156,7 +171,7 @@ void ArrayList::append(int x) {
 void ArrayList::preppend(int x) {
     if (!this->full())
     {
-        for (int i = tail; i >=head; i--)
+        for (int i = tail; i >= head; i--)
         {
             items[i + 1] = items[i];
         }
@@ -198,7 +213,9 @@ bool ArrayList::del(int p) {
 
 void ArrayList::clear() {
     for (int i = head; i <= tail; i++)
-        items[i] = items[5];
+        items[i] = items[tail + 1];
+    tail = -1;
+    head = -1;
     size = 0;
 }
 
@@ -227,24 +244,36 @@ int ArrayList::locate(int x) {
 }
 
 bool ArrayList::deleteX(int x) {
+    //wyszukiwanie pierwszej pozycji za pomoca wyszukiwania liniowego
     int firstPosition = -1;
     for (int i = head; i <= tail; i++)
     {
-        if (items[i] == x)
+        if (items[i] == x){
             firstPosition = i;
-        break;
+            break;
+        } 
     }
 
-    for (int i = firstPosition; i <= tail; i++)
-    {
-        items[i] = items[i + 1];
-    }
-    tail--;
-    size--;
-
+    //usuwanie elemntu z listy
     if (firstPosition == -1)
         return false;
-    else return true;
+    else 
+    {
+        if (firstPosition == tail)
+            tail--;
+        else
+        {
+            for (int i = firstPosition; i <= tail; i++)
+            {
+                items[i] = items[i + 1];
+            }
+            tail--;
+        }
+
+        size--;
+        return true;
+    }
+        
 }
 
 int ArrayList::deleteAllX(int x) {
@@ -254,9 +283,9 @@ int ArrayList::deleteAllX(int x) {
         if (items[i] == x)
         {
             counter++;
-            for (int i = x; i <= tail; i++)
+            for (int j = i; j <= tail; j++)
             {
-                items[i] = items[i + 1];
+                items[j] = items[j + 1];
             }
             tail--;
             size--;
