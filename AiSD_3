@@ -1,0 +1,282 @@
+#include <iostream>
+
+using namespace std;
+
+//Zadanie 1
+class ArrayList {
+private:
+    int* items;
+    int head;                    //pozycja pierwszego elementu
+    int tail;                    //pozycja ostatniego elementu
+    int capacity;                 //rozmiar tablicy
+    int size;                    //długość listy (liczba elementów w liście)
+
+public:
+    ArrayList(int c);            //tworzy pustą pistę o pojemności c
+    bool empty();                //zwraca prawdę jeśli lista pusta, fałsz w przeciwnym przypadku
+    bool full();                //zwraca prawdę jeśli lista jest pełna, fałsz w przeciwnym przypadku
+    int getSize();                //zwraca wielkość listy (liczbę elementów w liście)
+    int getCapacity();            //zwraca pojemnośc listy (rozmiar tablicy)
+    int getFirst();              //zwraca pozycję pierwszego elementu
+    int getLast();               //zwraca pozycję ostatniego elementu
+    int getNext(int p);            //zwraca pozycję elementu następnego za p
+    int getPrev(int p);            //zwraca pozycję elementu poprzedzającego p
+    int retrieve(int p);         //zwraca element (wartość) z pozycji p
+    void append(int x);            //wstawia element x na końcu listy
+    void preppend(int x);            //wstawia element x na początku listy
+    bool insert(int p, int x);     //wstawia element x na pozycję p, zwraca false jeśli p nie jest legalną pozycją
+    bool del(int p);              //usuwa element z pozycji p, zwraca false jeśli p nie jest legalną pozycją       
+    void clear();                //usuwa całą zawartość listy
+    friend ostream& operator<<(ostream& out, ArrayList& l); //wypisuje elementu listy   
+    ~ArrayList();
+
+
+    //Zadanie 2
+    int locate(int x);          //zwrac pozycję pierwszego wystąpienia elementu x, -1 jeśli x nie występuje
+    bool deleteX(int x);              //usuwa pierwsze wystąpienie elementu o wartości x i zwraca true jeśli element istniał, false jeśli nie
+    int deleteAllX(int x);            //usuwa wszystkie wystąpienia elementu o wartości x i zwraca ich liczbę
+    bool concat(ArrayList& l);        // na końcu bieżącej listy dołącza zawartość listy l, zwraca false jeśli dołączenie nie jest możliwe
+};
+
+//Zadanie 3
+
+class SortedArrayList {
+public:
+    //konstruktor, destruktor
+    void insertSorted(int x);                //wstawia element x z zachowaniem porządku niemalejącego
+};
+
+int main() 
+{
+	//Zadanie 1 - test
+	cout << endl << "Zadanie 1 oraz 2 - test" << endl;
+	 //przykładowy sposób testowania
+    //cout << endl << " " << ;
+    ArrayList a(5);
+    ArrayList b(8);
+    cout << endl << "a empty() 1 - " << a.empty();
+    cout << endl << "a full(): 0 - " << a.full();
+    cout << endl << "a getSize(): 0 - " << a.getSize();
+    cout << endl << "a append(4): 4 - "; 
+    a.append(4); cout << " " << a;
+    cout << endl << "a get capacity 5 - " << a.getCapacity();
+    cout << endl << "b get capacity 8 - " << a.getCapacity();
+    cout << endl << "a append(3,2,1): 4,3,2,1 - "; a.append(3); a.append(2); a.append(1); cout << " " << a;
+    cout << endl << "a getFirst 0 - " << a.getFirst();
+    cout << endl << "a getLast 3 -  " << a.getLast();
+    cout << endl << "a getNext 2 " << a.getNext(1);
+    cout << endl << "a getPrev 0 " << a.getPrev(1);
+    cout << endl << "a getNext -1 " << a.getNext(4);
+
+
+
+	return 0;
+}
+
+ArrayList::ArrayList(int c) {
+    capacity = c;
+    items = new int[capacity];
+    head = -1;
+    tail = -1;
+    size = 0;
+}
+
+
+bool ArrayList::empty() {
+    if (size == 0)
+        return true;
+    else return false;
+}
+
+bool ArrayList::full() {
+    if (size == capacity)
+        return true;
+    else return false;
+}
+
+int ArrayList::getSize() {
+    return size;
+}
+
+int ArrayList::getCapacity() {
+    return capacity;
+}
+
+int ArrayList::getFirst() {
+    return head;
+}
+
+int ArrayList::getLast() {
+    return tail;
+}
+
+int ArrayList::getNext(int p) {
+    if (p < tail && p >= head)
+        return p + 1;
+    else
+    {
+        cout << " Wykroczenie poza zakres!\n";
+        return -1;
+    }
+}
+
+int ArrayList::getPrev(int p) {
+    if (p > head && p <= tail)
+        return p - 1;
+    else
+    {
+        cout << " Wykroczenie poza zakres!\n";
+        return -1;
+    }
+}
+
+int ArrayList::retrieve(int p) {
+    if (p <= tail && p >= head)
+        return items[p];
+    else return -1;
+}
+
+void ArrayList::append(int x) {
+    if (tail == -1)
+    {
+        items[0] = x;
+        head = 0;
+        tail = 0;
+        size++;
+        return;
+    }
+    if (tail < capacity - 1)
+    {
+        tail++;
+        items[tail] = x;
+        size++;
+    }
+}
+
+void ArrayList::preppend(int x) {
+    if (!this->full())
+    {
+        for (int i = tail; i >=head; i--)
+        {
+            items[i + 1] = items[i];
+        }
+        tail++;
+        items[head] = x;
+        size++;
+    }
+
+}
+
+bool ArrayList::insert(int p, int x) {
+    if (!this->full())
+    {
+        for (int i = tail; i >= p; i--)
+        {
+            items[i + 1] = items[i];
+        }
+        tail++;
+        size++;
+        items[p] = x;
+        return true;
+    }
+    else return false;
+}
+
+bool ArrayList::del(int p) {
+    if (p >= head && p <= tail)
+    {
+        for (int i = p; i <= tail; i++)
+        {
+            items[i] = items[i + 1];
+        }
+        tail--;
+        size--;
+        return true;
+    }
+    return false;
+}
+
+void ArrayList::clear() {
+    for (int i = head; i <= tail; i++)
+        items[i] = items[5];
+    size = 0;
+}
+
+ostream& operator<<(ostream& out, ArrayList& l) {
+    out << "[ ";
+    for (int i = l.head; i <= l.tail; i++)
+    {
+        out << l.items[i] << " ";
+    }
+    out << "]";
+    return out;
+}
+
+ArrayList::~ArrayList() {
+    delete[]items;
+}
+
+int ArrayList::locate(int x) {
+    for (int i = head; i <= tail; i++)
+    {
+        if (items[i] == x)
+            return i;
+    }
+
+    return -1;
+}
+
+bool ArrayList::deleteX(int x) {
+    int firstPosition = -1;
+    for (int i = head; i <= tail; i++)
+    {
+        if (items[i] == x)
+            firstPosition = i;
+        break;
+    }
+
+    for (int i = firstPosition; i <= tail; i++)
+    {
+        items[i] = items[i + 1];
+    }
+    tail--;
+    size--;
+
+    if (firstPosition == -1)
+        return false;
+    else return true;
+}
+
+int ArrayList::deleteAllX(int x) {
+    bool counter = 0;
+    for (int i = head; i <= tail; i++)
+    {
+        if (items[i] == x)
+        {
+            counter++;
+            for (int i = x; i <= tail; i++)
+            {
+                items[i] = items[i + 1];
+            }
+            tail--;
+            size--;
+        }
+    }
+
+    return counter;
+}
+
+bool ArrayList::concat(ArrayList& l)
+{
+    if ((capacity - size) >= l.size)
+    {
+        for (int i = l.head; i <= l.tail; i++)
+        {
+            items[tail + 1] = l.items[i];
+            tail++;
+            size++;
+        }
+        return true;
+    }
+    return false;
+}
