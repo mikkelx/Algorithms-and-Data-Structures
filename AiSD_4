@@ -1,9 +1,9 @@
-
 #include <iostream>
-
 
 using namespace std;
 
+
+//Zadanie 1
 class Element {
 private:
     int v;
@@ -41,12 +41,24 @@ public:
     void preppend(int x);                            //wstawia element z x na początku listy
     void insert(Element* p, int x);              //wstawia element z wartością x na pozycję (wskazywaną przez) p       
     void del(Element* p);                            //usuwa element z pozycji (wskazywaniej przez) p       
-    void clear();                    //usuwa całą listę
+    void clear();                                   //usuwa całą listę
     friend ostream& operator<<(ostream& out, LinkedList* l); //wypisuje elementu listy           
     void insert(int p, int x);            //wstawia element z x na pozycję (integer) p (licząc od 0)
     void del(int p);                    //usuwa element z pozycji (integer) p (licząc od 0)
     ~LinkedList();
 };
+
+//Zadanie 2
+class SortedLinkedList:public LinkedList 
+{
+public:
+    //konstruktor, destruktor
+    void insertSorted(int x);
+    SortedLinkedList() : LinkedList() {};
+    ~SortedLinkedList() { this->clear(); };
+};
+
+
 
 int main()
 {
@@ -54,7 +66,7 @@ int main()
     LinkedList* a = new LinkedList();
     cout << endl << "empty(): 1 - " << a->empty();
     cout << endl << "getSize():  0 - " << a->getSize();
-    cout << endl << "append(4): 4 - "; a->append(4); 
+    cout << endl << "append(4): 4 - "; a->append(4);
     cout << " " << a;
     cout << endl << "append(5): [4,5] - "; a->append(5);
     cout << " " << a;
@@ -64,7 +76,7 @@ int main()
     cout << endl << "getSize():  3 - " << a->getSize();
     cout << endl << "retrieve(getFirst()): 6 - " << a->retrive(a->getFirst());
     cout << endl << "insert(tail, 3): [6 4 3 5] - ";
-    a->insert(a->getLast(), 3); 
+    a->insert(a->getLast(), 3);
     cout << " " << a;
     cout << endl << "insert(2, 7): [6 4 7 3 5] - ";
     a->insert(2, 7);
@@ -76,13 +88,34 @@ int main()
     a->insert(0, 8);
     cout << " " << a;
     cout << endl << "del(tail): [8 6 4 7 3 8] - ";
-    a->del(a->getLast());
-    cout << " " << a;
+    a->del(a->getLast()); cout << " " << a;
+    cout << endl << "del(1): [8 4 7 3 8] - ";
+    a->del(1); cout << " " << a;
+    cout << endl << "del(head): [4 7 3 8] - ";
+    a->del(a->getFirst()); cout << " " << a;
+    cout << endl << "del(0): [7 3 8] - "; a->del(0); cout << " " << a;
+    cout << endl << "clear() - "; a->clear(); cout << " " << a;
 
-	return 0;
+    //Zadanie 2 test
+    cout << endl << endl;
+    SortedLinkedList* b = new SortedLinkedList();
+    cout << endl << "empty(): 1 - " << b->empty();
+    cout << endl << "getSize():  0 - " << b->getSize();
+    cout << endl << "insertSorted(4): 4 - "; b->insertSorted(4);
+    cout << " " << b;
+    cout << endl << "insertSorted(2): 2 4 - "; b->insertSorted(2);
+    cout << " " << b;
+    cout << endl << "insertSorted(3): 2 3 4 - "; b->insertSorted(3);
+    cout << " " << b;
+    cout << endl << "insertSorted(1): 1 2 3 4 - "; b->insertSorted(1);
+    cout << " " << b;
+
+
+    return 0;
 }
 
 Element::Element() {
+    v = 0;
     next = nullptr;
     prev = nullptr;
 }
@@ -114,8 +147,9 @@ void Element::setPrev(Element* p) {
 }
 
 LinkedList::LinkedList() {
+    size = 0;
     head = new Element;
-    tail = new Element;
+    tail = head;
 }
 
 //LinkedList::LinkedList() :head(nullptr), tail(nullptr), size(0) {};
@@ -208,6 +242,7 @@ void LinkedList::insert(Element* p, int x) {
     newone->setPrev(temp);
     newone->setNext(temp->getNext());
     temp->setNext(newone);
+    tail = newone;
     size++;
 }
 
@@ -220,13 +255,13 @@ void LinkedList::insert(int p, int x) {
     int counter = 0;
     Element* temp = this->getFirst();
     //znalezienie wskaznika p w liscie
-    while(counter !=p ) 
+    while (counter != p)
     {
         temp = temp->getNext();
         counter++;
     }
-    
-    
+
+
     Element* newone = new Element;
     newone->setValue(x);
     newone->setPrev(temp->getPrev());
@@ -253,17 +288,96 @@ Element* LinkedList::locate(int x) {
 void LinkedList::del(Element* p)
 {
     Element* temp = this->getFirst();
+    int counter = 0;
+
+    //sprawdzenie czy wskaznik jest na liscie
     while (temp != p)
     {
+        counter++;
+        if (counter > size)
+            return;
         temp = temp->getNext();
     }
 
-    //ustawianie next p-1 elementu na p->next
-    temp->getPrev()->setNext(temp->getNext());
-    //ustawianie prev p+1 elementu na p->prev 
-    temp->getNext()->setPrev(temp->getPrev());
+    if (p == tail)
+    {
+        tail = p->getPrev();
+        tail->setNext(nullptr);
+    }
+    else if (p == head)
+    {
+        head = p->getNext();
+        head->setPrev(nullptr);
+    }
+    else {
+        Element* t1, * t2;
+        t1 = p->getPrev();
+        t2 = p->getNext();
+        //zmiana 
+        t1->setNext(t2);
+        t2->setPrev(t1);
+    }
 
+    ////ustawianie next p-1 elementu na p->next
+    //temp->getPrev()->setNext(temp->getNext());
+    ////ustawianie prev p+1 elementu na p->prev 
+    //temp->getNext()->setPrev(temp->getPrev());
+    size--;
     delete p;
+}
+
+void LinkedList::del(int p) {
+    Element* temp = this->getFirst();
+    int counter = 0;
+
+    //znalezienie odpowiedniej pozycji
+    while (counter != p)
+    {
+        if (counter > size)
+            return;
+        temp = temp->getNext();
+        counter++;
+    }
+
+    if (temp == tail)
+    {
+        tail = temp->getPrev();
+        tail->setNext(nullptr);
+        
+    }
+    else if (temp == head)
+    {
+        head = temp->getNext();
+        head->setPrev(nullptr);
+        cout << "delete";
+    }
+    else {
+        Element* t1, * t2;
+        t1 = temp->getPrev();
+        t2 = temp->getNext();
+        //zmiana 
+        t1->setNext(t2);
+        t2->setPrev(t1);
+    }
+
+    size--;
+    delete temp;
+}
+
+void LinkedList::clear() {
+    Element* toDelete = this->getFirst();
+    Element* nextOne = toDelete->getNext();
+
+    while (nextOne != nullptr)
+    {
+        delete toDelete;
+        toDelete = nextOne;
+        nextOne = nextOne->getNext();
+    }
+
+    size = 0;
+    head = nullptr;
+    tail = nullptr;
 }
 
 ostream& operator<<(ostream& out, LinkedList* l) {
@@ -271,7 +385,7 @@ ostream& operator<<(ostream& out, LinkedList* l) {
     out << "[";
     while (temp != nullptr)
     {
-        out << " " <<  temp->getValue();
+        out << " " << temp->getValue();
         temp = temp->getNext();
     }
     out << " ]";
@@ -279,5 +393,42 @@ ostream& operator<<(ostream& out, LinkedList* l) {
 }
 
 LinkedList::~LinkedList() {
-    
+    this->clear();
+}
+
+void SortedLinkedList::insertSorted(int x) {
+    int s = getSize();
+    Element* temp = this->getFirst();
+    bool found = false;
+
+    //znalezienie wskaznika na odpowiedniej pozycji
+    int position = 0;
+    if (s > 0)
+    {
+        for (int i = 0; i < s; i++)
+        {
+            if (x <= retrive(temp))
+            {
+                found = true;
+                position = i;
+                break;
+            }
+            temp = temp->getNext();
+        }
+    }
+
+    ////wstawianie na pierwsza lub jedyna pozycje
+    //if (s == 0 || position == 0) {
+    //    preppend(x);
+    //    return;
+    //}
+
+    //wstawianie na ostatnia pozycje
+    if (!found)
+    {
+        append(x);
+        return;
+    }
+    else
+        insert(position, x);
 }
