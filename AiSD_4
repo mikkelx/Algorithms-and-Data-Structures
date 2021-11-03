@@ -1,1 +1,283 @@
 
+#include <iostream>
+
+
+using namespace std;
+
+class Element {
+private:
+    int v;
+    Element* next;
+    Element* prev;
+
+public:
+    Element();                                        //tworzy pusty element
+    Element(int x, Element* next, Element* prev);    //tworzy element przechowujący x
+    int getValue();                                    //zwraca wartość
+    void setValue(int v);                            //ustawia warość v
+    Element* getNext();                                //zwraca ozycję następnego elementu
+    Element* getPrev();                                //zwraca pozycję poprzedniego elementu
+    void setNext(Element* p);                        //ustawia p jako następny element
+    void setPrev(Element* p);                        //ustawia p jako poprzedni element
+};
+
+class LinkedList {
+private:
+    Element* head;                    //pozycja pierwszego elementu
+    Element* tail;                    //pozycja ostatniego elementu
+    int size;
+
+public:
+    LinkedList();                                //tworzy pustą listę
+    bool empty();                                //zwraca prawdę jeśli lista pusta, fałsz w przeciwnym przypadku
+    int getSize();                                //zwraca wielkość listy (liczbę elementów w liście)
+    Element* getFirst();                         //zwraca pozycję (wskaźnik do) pierwszego elementu listy
+    Element* getLast();                               //zwraca pozycję (wskaźnik do) ostatniego elementu listy
+    Element* getNext(Element* p);               //zwraca pozycję (wskaźnik do) następniego elementu listy
+    Element* getPrev(Element* p);              //zwraca pozycję (wskaźnik do) poprzedniego elementu listy
+    int retrive(Element* p);                   //zwraca element (wartość) z pozycji (wskazywanej przez) p
+    Element* locate(int x);                         //zwrac pozycję pierwszego wystąpienia elementu x, NULL jeśli x nie występuje
+    void append(int x);                            //wstawia element z x na końcu listy
+    void preppend(int x);                            //wstawia element z x na początku listy
+    void insert(Element* p, int x);              //wstawia element z wartością x na pozycję (wskazywaną przez) p       
+    void del(Element* p);                            //usuwa element z pozycji (wskazywaniej przez) p       
+    void clear();                    //usuwa całą listę
+    friend ostream& operator<<(ostream& out, LinkedList* l); //wypisuje elementu listy           
+    void insert(int p, int x);            //wstawia element z x na pozycję (integer) p (licząc od 0)
+    void del(int p);                    //usuwa element z pozycji (integer) p (licząc od 0)
+    ~LinkedList();
+};
+
+int main()
+{
+    //zadanie 1
+    LinkedList* a = new LinkedList();
+    cout << endl << "empty(): 1 - " << a->empty();
+    cout << endl << "getSize():  0 - " << a->getSize();
+    cout << endl << "append(4): 4 - "; a->append(4); 
+    cout << " " << a;
+    cout << endl << "append(5): [4,5] - "; a->append(5);
+    cout << " " << a;
+    cout << endl << "getSize():  2 - " << a->getSize();
+    cout << endl << "preppend(6): [6 4 5] - "; a->preppend(6);
+    cout << " " << a;
+    cout << endl << "getSize():  3 - " << a->getSize();
+    cout << endl << "retrieve(getFirst()): 6 - " << a->retrive(a->getFirst());
+    cout << endl << "insert(tail, 3): [6 4 3 5] - ";
+    a->insert(a->getLast(), 3); 
+    cout << " " << a;
+    cout << endl << "insert(2, 7): [6 4 7 3 5] - ";
+    a->insert(2, 7);
+    cout << " " << a;
+    cout << endl << "insert(4, 8): [6 4 7 3 8 5] - ";
+    a->insert(4, 8);
+    cout << " " << a;
+    cout << endl << "insert(0, 8): [8 6 4 7 3 8 5] - ";
+    a->insert(0, 8);
+    cout << " " << a;
+    cout << endl << "del(tail): [8 6 4 7 3 8] - ";
+    a->del(a->getLast());
+    cout << " " << a;
+
+	return 0;
+}
+
+Element::Element() {
+    next = nullptr;
+    prev = nullptr;
+}
+
+Element::Element(int x, Element* next, Element* prev) : v(x), next(next), prev(prev) {};
+
+int Element::getValue() {
+    return v;
+}
+
+void Element::setValue(int v) {
+    this->v = v;
+}
+
+Element* Element::getNext() {
+    return this->next;
+}
+
+Element* Element::getPrev() {
+    return this->prev;
+}
+
+void Element::setNext(Element* p) {
+    next = p;
+}
+
+void Element::setPrev(Element* p) {
+    prev = p;
+}
+
+LinkedList::LinkedList() {
+    head = new Element;
+    tail = new Element;
+}
+
+//LinkedList::LinkedList() :head(nullptr), tail(nullptr), size(0) {};
+
+bool LinkedList::empty() {
+    if (size == 0)
+        return true;
+    return false;
+}
+
+int LinkedList::getSize() {
+    return size;
+}
+
+Element* LinkedList::getFirst() {
+    return head;
+}
+
+Element* LinkedList::getLast() {
+    return tail;
+}
+
+Element* LinkedList::getNext(Element* p) {
+    return p->getNext();
+}
+
+Element* LinkedList::getPrev(Element* p) {
+    return p->getPrev();
+}
+
+int LinkedList::retrive(Element* p) {
+    return p->getValue();
+}
+
+void LinkedList::append(int x) {
+    Element* newone = new Element;
+    newone->setValue(x);
+    if (size == 0)
+    {
+        head = newone;
+        tail = newone;
+        size++;
+    }
+    else {
+        newone->setPrev(tail);
+        tail->setNext(newone);
+        tail = newone;
+        size++;
+    }
+}
+
+void LinkedList::preppend(int x) {
+    Element* newone = new Element;
+    newone->setValue(x);
+    if (size == 0)
+    {
+        head = newone;
+        tail = newone;
+    }
+    else {
+        newone->setNext(head);
+        head->setPrev(newone);
+        head = newone;
+    }
+    size++;
+}
+
+void LinkedList::insert(Element* p, int x) {
+    if (p == this->getFirst())
+    {
+        preppend(x);
+        return;
+    }
+    Element* temp = p;
+    int counter = 0;
+    //znalezienie wskaznika p w liscie
+    while (temp != p)
+    {
+        counter++;
+        temp = temp->getNext();
+
+        if (counter > size)
+            return;
+    }
+    //przypisanie x do isniejacego w liscie wskaznika 
+    Element* newone = new Element;
+    newone->setValue(temp->getValue());
+    temp->setValue(x);
+    //utworzenie nowego el listy zaraz za wskaznikiem p
+    newone->setPrev(temp);
+    newone->setNext(temp->getNext());
+    temp->setNext(newone);
+    size++;
+}
+
+void LinkedList::insert(int p, int x) {
+    if (p == 0)
+    {
+        preppend(x);
+        return;
+    }
+    int counter = 0;
+    Element* temp = this->getFirst();
+    //znalezienie wskaznika p w liscie
+    while(counter !=p ) 
+    {
+        temp = temp->getNext();
+        counter++;
+    }
+    
+    
+    Element* newone = new Element;
+    newone->setValue(x);
+    newone->setPrev(temp->getPrev());
+    newone->setNext(temp);
+    //przestawienie wsk poprzedniego el na newone
+    newone->getPrev()->setNext(newone);
+    temp->setPrev(newone);
+    size++;
+}
+
+Element* LinkedList::locate(int x) {
+    Element* temp = this->getFirst();
+    while (temp != nullptr)
+    {
+        if (temp->getValue() == x)
+        {
+            return temp;
+        }
+        temp = temp->getNext();
+    }
+    return nullptr;
+}
+
+void LinkedList::del(Element* p)
+{
+    Element* temp = this->getFirst();
+    while (temp != p)
+    {
+        temp = temp->getNext();
+    }
+
+    //ustawianie next p-1 elementu na p->next
+    temp->getPrev()->setNext(temp->getNext());
+    //ustawianie prev p+1 elementu na p->prev 
+    temp->getNext()->setPrev(temp->getPrev());
+
+    delete p;
+}
+
+ostream& operator<<(ostream& out, LinkedList* l) {
+    Element* temp = l->getFirst();
+    out << "[";
+    while (temp != nullptr)
+    {
+        out << " " <<  temp->getValue();
+        temp = temp->getNext();
+    }
+    out << " ]";
+    return out;
+}
+
+LinkedList::~LinkedList() {
+    
+}
