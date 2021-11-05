@@ -1,0 +1,299 @@
+#include <iostream>
+
+using namespace std;
+
+//Zadanie 1
+
+class ArrayStack {
+private:
+    int* items;
+    int capacity;        //pojemność stosu
+    int top;                //wierzchołek stosu
+public:
+    ArrayStack(int c);    //tworzy pusty stos o pojemności c
+    bool empty();
+    bool full();
+    bool push(int x);
+    int peek();            //zwraca daną ze stosu
+    bool pop();            //usuwa daną ze stosu
+    void clear();
+    friend std::ostream& operator<<(std::ostream& out, ArrayStack& s); //wyświetla całą zawartość stosu    
+    ~ArrayStack();
+};
+
+//Zadanie 2
+class Element {
+private:
+    int v;
+    Element* next;
+public:
+    Element(int x, Element* next);
+    int getValue();
+    Element* getNext();
+    void setNext(Element* p);
+};
+
+class LinkedStack {
+private:
+    Element* top;
+public:
+    LinkedStack();        //tworzy pusty stos
+    bool empty();
+    bool push(int x);
+    int peek();            //zwraca daną ze stosu
+    bool pop();            //usuwa element ze stosu
+    void clear();
+    friend std::ostream& operator<<(std::ostream& out, LinkedStack* s); //wyświetla zawartość całego stosu
+    ~LinkedStack();
+};
+
+//Zadanie 3
+//Zadanie 3
+class ArrayFifo {
+private:
+    int* items;
+    int capacity;            //pojemność kolejki
+    int size;                //rozmiar kolejki (liczba elementów w kolejce)
+    int head;
+    int tail;
+public:
+    ArrayFifo(int c);        //tworzy pustą kolejkę o pojemności c
+    bool empty();
+    bool full();
+    bool enqueue(int x);
+    int peek();
+    bool dequeue();        //usuwa daną z kolejki
+    void clear();
+    friend std::ostream& operator<<(std::ostream& out, ArrayFifo& f);    //wyświetla zawartość kolejki (od head do tail)
+    ~ArrayFifo();
+};
+
+
+
+int main()
+{
+    //Zadanie 1 - test
+    ArrayStack s(6);
+    cout << endl << "empty(): 1 - " << s.empty();
+    cout << endl << "push(4): 4 - "; s.push(4);  cout << " " << s;
+    cout << endl << "push(3): 4 3 - "; s.push(3);  cout << " " << s;
+    cout << endl << "push(1): 4 3 1 - "; s.push(1);  cout << " " << s;
+    cout << endl << "pop(): 4 3 - "; s.pop(); cout << " " << s;
+    cout << endl << "push(6): 4 3 6 - "; s.push(6);  cout << " " << s;
+    cout << endl << "push(7): 4 3 6 7 - "; s.push(7);  cout << " " << s;
+    cout << endl << "empty(): 0 - " << s.empty();
+    cout << endl << "peek(): 7 - " << s.peek();
+    cout << endl << "push(8): 4 3 6 7 8 - "; s.push(8);  cout << " " << s;
+    cout << endl << "push(9): 4 3 6 7 8 9 - "; s.push(9);  cout << " " << s;
+    cout << endl << "push(10): 4 3 6 7 8 9 - "; s.push(10);  cout << " " << s;
+    cout << endl << "full(): 1 - " << s.full();
+    cout << endl << "clear(): [ ] - "; s.clear(); cout << " " << s;
+
+    cout << endl << "Zadanie 2: " << endl;
+    LinkedStack* l = new LinkedStack();
+    cout << endl << "empty(): 1 - " << l->empty();
+    cout << endl << "push(5): 5 - "; l->push(5); cout << " " << l;
+    cout << endl << "push(4): 4 5 - "; l->push(4); cout << " " << l;
+    cout << endl << "push(3): 3 4 5 - "; l->push(3); cout << " " << l;
+    cout << endl << "push(6): 6 3 4 5 - "; l->push(6); cout << " " << l;
+    cout << endl << "pop(): 3 4 5 - "; l->pop(); cout << " " << l;
+    cout << endl << "peek(): 3 - " << l->peek();
+    cout << endl << "clear() [] - "; l->clear(); cout << " " << l;
+
+
+	return 0;
+}
+
+ArrayStack::ArrayStack(int c) {
+    items = new int [c];
+    capacity = c;
+    top = -1;
+}
+
+bool ArrayStack::empty() {
+    if (top == -1)
+        return true;
+    else return false;
+}
+
+bool ArrayStack::full() {
+    if (top == (capacity - 1))
+        return true;
+    else return false;
+}
+
+bool ArrayStack::push(int x) {
+    if (this->full())
+        return false;
+    top++;
+    items[top] = x;
+    return true;
+}
+
+int ArrayStack::peek() {
+    if (this->empty())
+        return -1;
+
+    return items[top];
+}
+
+bool ArrayStack::pop() {
+    if (this->empty())
+        return false;
+    top--;
+    return true;
+}
+
+void ArrayStack::clear() {
+    for (int i = 0; i < top; i++)
+    {
+        items[i] = NULL;
+    }
+    top = -1;
+}
+
+std::ostream& operator<<(std::ostream& out, ArrayStack& s)//wyświetla całą zawartość stosu
+{
+    out << "[ ";
+    if (!s.empty())
+    {
+        for (int i = 0; i <= s.top; i++)
+        {
+            out << s.items[i] << " ";
+        }
+    }
+    out << "]";
+
+    return out;
+}
+
+ArrayStack::~ArrayStack() {
+    delete items;
+}
+
+
+//Zadanie 2
+
+Element::Element(int x, Element* next) :v(x), next(next) {};
+
+int Element::getValue() {
+    return v;
+}
+
+Element* Element::getNext() {
+    return next;
+}
+
+void Element::setNext(Element* p) {
+    this->next = p;
+}
+
+LinkedStack::LinkedStack() {
+    top = nullptr;
+}
+
+bool LinkedStack::empty() {
+    if (top == nullptr)
+        return true;
+    else return false;
+}
+
+bool LinkedStack::push(int x) {
+    Element* newone = new Element(x, top);
+    top = newone;
+    return true;
+}
+
+int LinkedStack::peek() {
+    if (this->empty())
+        return NULL;
+    return top->getValue();
+}
+
+bool LinkedStack::pop() {
+    if (!empty())
+    {
+        Element* temp = top;
+        top = top->getNext();
+        delete temp;
+        return true;
+    }
+    else return false;
+}
+
+void LinkedStack::clear() {
+    if (this->empty())
+        return;
+    Element* nextOne = top->getNext();
+    while (nextOne != nullptr)
+    {
+        delete top;
+        top = nextOne;
+        nextOne = nextOne->getNext();
+    }
+    delete top;
+    top = nullptr;
+}
+
+std::ostream& operator<<(std::ostream& out, LinkedStack* s) {
+    out << "[ ";
+    Element* temp = s->top;
+    if (!s->empty())
+    {
+        while (temp != nullptr)
+        {
+            out << temp->getValue() << " ";
+            temp = temp->getNext();
+        }
+    }
+    out << "]";
+    return out;
+}
+
+LinkedStack::~LinkedStack() {
+    this->clear();
+}
+
+
+//Zadanie 3
+
+ArrayFifo::ArrayFifo(int c) {
+    items = new int[c];
+    capacity = c;
+    size = 0;
+    head = -1;
+    tail = -1;
+}
+
+bool ArrayFifo::empty() {
+    if (size == 0)
+        return true;
+    else return false;
+}
+
+bool ArrayFifo::full() {
+    if (size == capacity)
+        return true;
+    else return false;
+}
+
+bool ArrayFifo::enqueue(int x) {
+    if (head == -1)
+    {
+        items[0] = x;
+        head = 0;
+        tail = 0;
+        size++;
+    }
+    else if (tail < capacity - 1)
+    {
+        tail++;
+        items[tail] = x;
+        size++;
+    }
+    else if (tail == capacity - 1)
+    {
+
+    }
+        
+}
