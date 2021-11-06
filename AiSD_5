@@ -133,9 +133,17 @@ int main()
     cout << endl << "clear() [] - "; f.clear(); cout << " " << f;
 
     //Zadanie 4 test
-    cout << endl << "Zadanie 4: " << endl;
-    //LinkedFifo* f = new LinkedFifo();
-
+    cout << endl << "\nZadanie 4: " << endl;
+    LinkedFifo* lf = new LinkedFifo();
+    cout << endl << "empty(): 1 - " << lf->empty();
+    cout << endl << "enqueue(4): 4 - "; lf->enqueue(4); cout << " " << lf;
+    cout << endl << "enqueue(5): 4 5 - "; lf->enqueue(5); cout << " " << lf;
+    cout << endl << "enqueue(6): 4 5 6 - "; lf->enqueue(6); cout << " " << lf;
+    cout << endl << "dequeue(): 5 6 - "; lf->dequeue(); cout << " " << lf;
+    cout << endl << "enqueue(1): 5 6 1 - "; lf->enqueue(1); cout << " " << lf;
+    cout << endl << "peek() 5 -  " << lf->peek();
+    cout << endl << "clear() [] - "; lf->clear(); cout << " " << lf;
+    cout << endl << "dequeue(): [] - "; lf->dequeue(); cout << " " << lf;
 
     return 0;
 }
@@ -419,14 +427,16 @@ bool LinkedFifo::empty() {
 }
 
 bool LinkedFifo::enqueue(int x) {
+
+    Element* newone = new Element(x, nullptr);
+
     //dodawanie elementu do pustej listy
-    if (this->empty())
+    if (empty())
     {
-        Element* newone = new Element(x, nullptr);
         head = tail = newone;
     }
     else {
-        Element* newone = new Element(x, tail);
+        tail->setNext(newone);
         tail = newone;
     }
     return true;
@@ -439,11 +449,48 @@ int LinkedFifo::peek() {
 }
 
 bool LinkedFifo::dequeue() {
+    Element* temp;
+
     if (this->empty())
         return false;
     else if(head == tail)
     {
         delete head;
         head = tail = nullptr;
+        return true;
+    }
+    else if (head != nullptr)
+    {
+        temp = head;
+        head = head->getNext();
+        delete temp;
+        return true;
+    }
+    return false;
+}
+
+std::ostream& operator<<(std::ostream& out, LinkedFifo* f)
+{
+    out << "[ ";
+    if (!f->empty())
+    {
+        Element* temp = f->head;
+        while (temp != nullptr)
+        {
+            out << temp->getValue() << " ";
+            temp = temp->getNext();
+        }
+    }
+    out << "]";
+    return out;
+}
+
+void LinkedFifo::clear() {
+    Element* temp;
+    while (head != nullptr)
+    {
+        temp = head;
+        head = head->getNext();
+        delete temp;
     }
 }
