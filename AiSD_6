@@ -1,0 +1,347 @@
+//Zięba Michał
+
+#include <iostream>
+
+using namespace std;
+
+//Zadanie 1
+class Node {
+private:
+    int value;
+    Node* left;
+    Node* right;
+    Node* parent;
+public:
+    Node(int v, Node* l, Node* r, Node* p);
+    int getValue();
+    Node* getLeft();
+    Node* getRight();
+    Node* getParent();
+    void setValue(int v);
+    void setLeft(Node* l);
+    void setRight(Node* r);
+    void setParent(Node* p);
+};
+
+class BSTree {
+private:
+    Node* root;
+public:
+    BSTree();                        //tworzy puste drzewo
+    Node* getRoot();            //zwraca wskażnik do root - metoda pomocnicza w testowaniu
+    bool empty(Node* p);        //zwraca prawdę gdy drzewo jest puste
+    void inorder(Node* p);
+    //BST   
+    void insert(int x);            //wstawia węzeł z wartością x
+    Node* search(int x);         //zwraca wskaźnik do węzła z wartością x (lub NULL jeśli nie istnieje)
+    Node* minimum();            //zwraca wskaźnik do węzła z minimalną wartością
+    Node* maximum();            //zwraca wskaźnik do węzła z maksymalną wartością
+    Node* successor(Node* p);    //zwraca wskaźnik do nastęnika p
+    Node* predecessor(Node* p);    //zwraca wskaźnik do poprzednika p
+    void del(Node* p);            //usuwa węzeł wskazywany przez p
+
+	 //Zadanie 2
+	int size(Node* p);                  //zwraca rozmiar drzewa
+	int hight(Node* p);              //zwraca wysokość drzewa
+	void clear(Node* p);           //usuwa wszystkie węzły z drzewa
+};
+
+
+
+int main() {
+
+	BSTree* t = new BSTree();
+	t->insert(9); t->inorder(t->getRoot()); cout << endl;
+	t->insert(4); t->inorder(t->getRoot()); cout << endl;
+	t->insert(1); t->inorder(t->getRoot()); cout << endl;
+	t->insert(14); t->inorder(t->getRoot()); cout << endl;
+	t->insert(7); t->inorder(t->getRoot()); cout << endl;
+	t->insert(11); t->inorder(t->getRoot()); cout << endl;
+	t->insert(12); t->inorder(t->getRoot()); cout << endl;
+	t->insert(6); t->inorder(t->getRoot()); cout << endl;
+	t->insert(16); t->inorder(t->getRoot()); cout << endl;
+	t->insert(20); t->inorder(t->getRoot()); cout << endl;
+	t->insert(17); t->inorder(t->getRoot()); cout << endl;
+
+	cout << "Minimum 1 - " << t->minimum()->getValue() << endl;
+	cout << "Maximum 20 - " << t->maximum()->getValue() << endl;
+
+	cout << "Search(16) - " << t->search(16)->getValue() << endl;
+	cout << "Successor(6) 7 - " << t->successor(t->search(6))->getValue() <<endl;
+	cout << "Successor(16) 17 - " << t->successor(t->search(16))->getValue() << endl;
+	cout << "Predecessor(11) 9 - " << t->predecessor(t->search(11))->getValue() << endl;
+	cout << "Predecessor(4) 1 - " << t->predecessor(t->search(4))->getValue() << endl;
+
+
+	return 0;
+}
+
+//Node
+
+Node::Node(int v, Node* l, Node* r, Node* p) : value(v), left(l), right(r), parent(p) {};
+
+int Node::getValue() 
+{
+	return value;
+}
+
+Node* Node::getLeft() 
+{
+	return left;
+}
+
+Node* Node::getRight()
+{
+	return right;
+}
+
+Node* Node::getParent() 
+{
+	return parent;
+}
+
+void Node::setValue(int v) 
+{
+	value = v;
+}
+
+void Node::setLeft(Node* l)
+{
+	left = l;
+}
+
+void Node::setRight(Node* r) 
+{
+	right = r;
+}
+
+void Node::setParent(Node* p)
+{
+	parent = p;
+}
+
+//BSTree
+
+BSTree::BSTree() : root(nullptr) {};
+
+Node* BSTree::getRoot() 
+{
+	return root;
+}
+
+bool BSTree::empty(Node* p)
+{
+	if (p == nullptr)
+		return true;
+	else return false;
+}
+
+
+void BSTree::insert(int x) 
+{
+	Node* newone = new Node(x, nullptr, nullptr, nullptr);
+	Node* temp = root;
+
+	if (root == nullptr)
+	{
+		root = newone;
+		return;
+	}
+
+	bool stop = false;
+
+	while (!stop) {
+		if (temp->getValue() > x)
+		{
+			if (!empty(temp->getLeft()))
+				temp = temp->getLeft();
+			else
+			{
+				temp->setLeft(newone);
+				newone->setParent(temp);
+				stop = true;
+			}
+		}
+		else if (temp->getValue() < x)
+		{
+			if (!empty(temp->getRight()))
+				temp = temp->getRight();
+			else {
+				temp->setRight(newone);
+				newone->setParent(temp);
+				stop = true;
+			}
+		}
+	}
+}
+
+void BSTree::inorder(Node* p)
+{
+	if (!empty(p)) {
+		inorder(p->getLeft());
+		cout << p->getValue() << " ";
+		inorder(p->getRight());
+	}
+
+}
+
+Node* BSTree::search(int x) 
+{
+	Node* temp = root;
+
+	bool stop = false;
+
+	while (!stop) {
+		if (temp->getValue() > x)
+		{
+			if (!empty(temp->getLeft()))
+			{
+				temp = temp->getLeft();
+				if (temp->getValue() == x)
+					return temp;
+			}
+			else stop = true;
+		}
+		else if (temp->getValue() < x)
+		{
+			if (!empty(temp->getRight()))
+			{
+				temp = temp->getRight();
+				if (temp->getValue() == x)
+					return temp;
+			}
+			else stop = true;
+		}
+	}
+	return nullptr;
+}
+
+Node* BSTree::minimum() 
+{
+	Node* temp = root;
+
+	while (!empty(temp->getLeft()))
+	{
+		temp = temp->getLeft();
+	}
+
+	return temp;
+}
+
+Node* BSTree::maximum() 
+{
+	Node* temp = root;
+
+	while (!empty(temp->getRight()))
+	{
+		temp = temp->getRight();
+	}
+
+	return temp;
+}
+
+Node* BSTree::successor(Node* p)
+{
+	//jesli drzewo puste
+	if (empty(root))
+		return NULL;
+	
+	//p nie ma prawego poddrzewa
+	if (empty(p->getRight()))
+	{
+		Node* temp = p->getParent();
+		while (!empty(temp) && p == temp->getRight())
+		{
+			p = temp;
+			temp = temp->getParent();
+		}
+		return temp;
+	}
+	else
+	{
+		//szukanie najmniejszej wartosci w prawym poddrzewie
+        //aby to zrobic korzen ustawiamy na chwile na prawego syna p
+		Node* temp = root;
+		root = p->getRight();
+		Node* result = nullptr;
+
+		if (!empty(p))
+		{
+			result = minimum();
+		}
+		root = temp;
+		return result;
+	}
+}
+
+Node* BSTree::predecessor(Node* p)
+{
+	//puste drzewo
+	if (empty(root))
+		return nullptr;
+
+	//nie ma lewego poddrzewa
+	if (empty(p->getLeft()))
+	{
+		Node* temp = p->getParent();
+		while (!empty(temp) && p == temp->getLeft())
+		{
+			p = temp;
+			temp = temp->getParent();
+		}
+		return temp;
+	}
+	else
+	{
+		Node* temp = root;
+		Node* result = nullptr;
+		root = p->getLeft();
+		if (!empty(p))
+		{
+			result = minimum();
+		}
+		root = temp;
+		return result;
+	}
+}
+
+void BSTree::del(Node* p)
+{
+	//puste drzewo
+	if (empty(root))
+		return;
+
+	//p jest lisciem
+	if (p->getRight() == nullptr && p->getLeft() == nullptr)
+	{
+		Node* temp = p->getParent();
+		if (empty(temp))
+			root = nullptr;
+		else if (temp->getLeft() == p)
+			temp->setLeft(nullptr);
+		else if (temp->getRight() == p)
+			temp->setRight(nullptr);
+
+		delete p;
+	}
+
+	//p ma jednego syna
+	if ((p->getLeft() != nullptr && p->getRight() == nullptr) || (p->getLeft() == nullptr && p->getRight() != nullptr))
+	{
+		//r - jedny syn
+		Node* r = nullptr;
+		if (empty(p->getLeft()))
+			r = p->getRight();
+		else r = p->getLeft();
+		
+		Node* temp = p->getParent();
+		//p jest korzeniem i jedyny syn staje sie nowym korzeniem
+		if (empty(temp))
+			root = r;
+		else if (temp->getLeft() == p) //przestawienie wezla, jedyny syn zastepuje usuwany wezel
+			p->setLeft(r);
+		else p->setRight(r);
+
+		delete p;
+	}
+}
