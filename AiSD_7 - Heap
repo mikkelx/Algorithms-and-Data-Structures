@@ -1,0 +1,195 @@
+#include <iostream>
+#include <algorithm>
+
+
+using namespace std;
+
+
+//Zadanie 1
+class MinHeap {
+private:
+    int* kopiec;
+    int capacity;
+    int size;
+public:
+    MinHeap(int c);            //tworzy pusty kopiec o pojemności c
+    MinHeap();                //konstruktor do testów kopca - należy utworzyć kopiec z następującą zawartością: 1, 2, 4, 6, 5, 4, 7, 7, 7, 9, 6
+    bool empty();
+    bool full();
+    int getLeft(int i);                    //zwraca pozycję lewego syna
+    int getRight(int i);                //zwraca pozycję prawego syna
+    int getParent(int i);                //zwraca pozycję ojca
+    int getSize();                        //zwraca rozmiar kopca
+    void setSize(int s);                //ustawia rozmiar kopca na s
+    int getValue(int i);                //zwraca wartość z pozycji i
+    void setValue(int i, int x);        //ustawia wartość x na pozycji i
+    void bottomUp(int i);                //przywraca własność kopca metodą wynurzania
+    void topDown(int i);                //przywraca własność kopca metodą zatapiania
+    friend std::ostream& operator<<(std::ostream& out, MinHeap& h);
+
+    //Zadanie 2
+    void insert(int x);                    //wstawia element z priorytetem x
+    int deleteMin();                     //usuwa element z minimalną wartością
+    int minimum();                        //zwraca minimalną wartość
+    void del(int i);                         //usuwa element na pozycji i
+    void decreaseKey(int i, int x);        //zmniejsza wartość na pozycji i, ustawia x    
+
+};
+
+
+int main()
+{
+    MinHeap h;
+    cout << endl << "empty(): 0 - " << h.empty();
+
+    cout << endl << "full(): 1 - " << h.full();
+
+    cout << endl<< h;
+    cout << endl << "setValue(2,6) "; h.setValue(2, 6);
+
+    /*cout << endl << "setValue(8,5) "; h.setValue(8, 5);
+    cout << endl << h;
+    cout << endl << "getParent(8) 3 - " << h.getParent(8);
+    cout << endl << "getValue(3) 6 - " << h.getValue(3);
+    h.bottomUp(8);
+    cout << endl << "bottomUp(8) - [1 2 4 5 5 4 7 7 6 9 6] - " << h;
+    cout << endl << "getLeft(2) 5 - " << h.getLeft(2);
+    cout << endl << "setValue(2,6) "; h.setValue(2, 6);*/
+    cout << endl << h;
+    h.topDown(2);
+    cout << endl << h;
+
+
+
+
+	return 0;
+}
+
+//Zadanie 1
+
+MinHeap::MinHeap(int c)
+{
+    kopiec = new int[c];
+    capacity = c;
+    size = 0;
+}
+
+MinHeap::MinHeap()
+{
+    kopiec = new int[11];
+    kopiec[0] = 1; kopiec[1] = 2; kopiec[2] = 4; kopiec[3] = 6; kopiec[4] = 5; kopiec[5] = 4; kopiec[6] = 7; kopiec[7] = 7; kopiec[8] = 7; kopiec[9] = 9; kopiec[10] = 6;
+    capacity = 11;
+    size = 11;
+}
+
+bool MinHeap::empty()
+{
+    if (size == 0)
+        return true;
+    else return false;
+}
+
+bool MinHeap::full()
+{
+    if (size == capacity)
+        return true;
+    else return false;
+}
+
+int MinHeap::getLeft(int i)
+{
+    if (empty())
+        return -1;
+
+    if ((2 * i + 1) < size)
+        return 2 * i + 1;
+    else return -1;
+}
+
+int MinHeap::getRight(int i)
+{
+    if (empty())
+        return -1;
+
+    if ((2 * i + 2) < size)
+        return 2 * i + 2;
+    else return -1;
+}
+
+int MinHeap::getParent(int i)
+{
+    if (i == 0)
+        return -1;
+    else return (i - 1) / 2;
+}
+
+int MinHeap::getSize()
+{
+    return size;
+}
+
+void MinHeap::setSize(int s)
+{
+    size = s;
+}
+
+int MinHeap::getValue(int i)
+{
+    if (empty())
+        return NULL;
+    else return kopiec[i];
+}
+
+void MinHeap::setValue(int i, int x)
+{
+    kopiec[i] = x;
+}
+
+std::ostream& operator<<(std::ostream& out, MinHeap& h)
+{
+    out << "[ ";
+    for (int i = 0; i < h.getSize(); i++)
+    {
+        out << h.getValue(i) << " ";
+    }
+    out << "]";
+    return out;
+}
+
+void MinHeap::topDown(int i)
+{
+    int l = getLeft(i);
+    int r = getRight(i);
+    if ( l<0 || r<0)
+        return;
+    int g = i;
+    if (l < getSize() && getValue(l) < getValue(i))
+        g = l;
+    if (r < getSize() && getValue(r) < getValue(g))
+        g = r;
+    if (g != i)
+    {
+        int temp = getValue(i);
+        setValue(i, getValue(g));
+        setValue(g, temp);
+        topDown(g);
+    }
+}
+
+void MinHeap::bottomUp(int i)
+{
+    if (i > 0)
+    {
+        int p = getParent(i);
+        if (getValue(i) < getValue(p))
+        {
+            swap(kopiec[i], kopiec[p]);
+            /*int temp = getValue(i);
+            setValue(i, getValue(p));
+            setValue(p, temp);*/
+            bottomUp(p);
+        }
+    }
+}
+
+
