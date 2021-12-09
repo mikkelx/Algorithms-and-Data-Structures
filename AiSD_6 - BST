@@ -42,7 +42,7 @@ public:
 
 	 //Zadanie 2
 	int size(Node* p);                  //zwraca rozmiar drzewa
-	int hight(Node* p);              //zwraca wysokość drzewa
+	int height(Node* p);              //zwraca wysokość drzewa
 	void clear(Node* p);           //usuwa wszystkie węzły z drzewa
 };
 
@@ -71,6 +71,9 @@ int main() {
 	cout << "Successor(16) 17 - " << t->successor(t->search(16))->getValue() << endl;
 	cout << "Predecessor(11) 9 - " << t->predecessor(t->search(11))->getValue() << endl;
 	cout << "Predecessor(4) 1 - " << t->predecessor(t->search(4))->getValue() << endl;
+	cout << "Size(root) 11 - " << t->size(t->getRoot()) << endl;
+	cout << "Height(root) 4 - " << t->height(t->getRoot()) << endl;
+	
 
 
 	return 0;
@@ -142,7 +145,8 @@ void BSTree::insert(int x)
 	Node* newone = new Node(x, nullptr, nullptr, nullptr);
 	Node* temp = root;
 
-	if (root == nullptr)
+	//drzewo jest puste
+	if (empty(root))
 	{
 		root = newone;
 		return;
@@ -150,13 +154,13 @@ void BSTree::insert(int x)
 
 	bool stop = false;
 
-	while (!stop) {
+	while (!stop) {                 //jesli wartosc aktualnego node jest wiekszy od wstawianej wartosci
 		if (temp->getValue() > x)
 		{
-			if (!empty(temp->getLeft()))
+			if (!empty(temp->getLeft()))  //idziemy w lewo jesli na lewo nie jest pusto
 				temp = temp->getLeft();
 			else
-			{
+			{           //jesli lewe dziecko jest puste to wstawiamy tam nowego node'a
 				temp->setLeft(newone);
 				newone->setParent(temp);
 				stop = true;
@@ -172,6 +176,8 @@ void BSTree::insert(int x)
 				stop = true;
 			}
 		}
+		else if (temp->getValue() == x) //podany klucz juz jest w drzewie
+			return;
 	}
 }
 
@@ -219,7 +225,7 @@ Node* BSTree::search(int x)
 Node* BSTree::minimum() 
 {
 	Node* temp = root;
-
+	//zejscie do maksymalnie nowego Node'a
 	while (!empty(temp->getLeft()))
 	{
 		temp = temp->getLeft();
@@ -231,7 +237,7 @@ Node* BSTree::minimum()
 Node* BSTree::maximum() 
 {
 	Node* temp = root;
-
+	//zejscie do maksymalnie prawego Node'a
 	while (!empty(temp->getRight()))
 	{
 		temp = temp->getRight();
@@ -343,5 +349,26 @@ void BSTree::del(Node* p)
 		else p->setRight(r);
 
 		delete p;
+	}
+}
+
+int BSTree::size(Node* p)
+{
+	if (empty(p))
+		return 0;
+	else //dodaj rozmiar lewego poddrzewa, korzenia oraz prawego poddrzewa
+		return(size(p->getLeft()) + 1 + size(p->getRight()));
+}
+
+int BSTree::height(Node* p)
+{
+	if (empty(p))
+		return -1;
+	else
+	{
+		int leftHieght = height(p->getLeft());
+		int rightHeight = height(p->getRight());
+		//wybieramy wieksze
+		return max(leftHieght, rightHeight) + 1;
 	}
 }
