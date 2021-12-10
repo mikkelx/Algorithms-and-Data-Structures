@@ -1,0 +1,158 @@
+//Zięba Michał
+
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+// Zadanie 1
+class HashTable {
+private:
+    string* t;
+    int capacity;
+    int size;
+public:
+    HashTable(int c);                //konstruktor tworzący pustą tablicę o pojemności c
+    bool empty();
+    bool full();
+    int hashFunction(string s);        //funkcja haszująca dla klucza s
+    int insert(string s);            //wstawienie klucza s (zwraca liczbę prób przy wystąpieniu kolizji - 0 jeśli kolizja nie wystąpiła)
+    void del(string s);                //usuwa klucz s
+    string search(string s);        //wyszukuje i zwraca s
+    int search1(string s);            //wyszukuje s i zwraca liczbę prób przy wystąpieniu kolizji - 0 jeśli kolizja nie wystąpiła
+    friend ostream& operator<<(ostream& out, HashTable& ht); //wypisuje tablicę (z numerami pól), pozostawia puste dla wolnych pól
+
+};
+
+int main()
+{
+    // Zadanie 1 - test
+    cout << "Zadanie 1 - test" << endl;
+    {
+        int n = 9;                //pojemność tablicy z haszowaniem
+        HashTable h(n);
+        cout << "empty(): 1 - " << h.empty() << endl;
+        cout << "full(): 0 - " << h.full() << endl;
+        cout << "insert(Polska): " << h.insert("Polska") << endl << h;
+        cout << "insert(Anglia): " << h.insert("Anglia") << endl << h;
+        cout << "insert(Chiny): " << h.insert("Chiny") << endl << h;
+        cout << "insert(Niemcy): " << h.insert("Niemcy") << endl << h;
+        cout << "delete(Niemcy): "; h.del("Niemcy"); cout << endl << h;
+    }
+
+    //Zadanie 2 - test
+    cout << "\nZadanie 2 - test" << endl;
+    {
+        ifstream inputFile("dane.txt");
+        int n = 40;
+        string dane[40];
+
+        for (int i = 0; i < n; i++)
+            inputFile >> dane[i];
+
+        HashTable ht(n);
+
+        for (int i = 0; i < n; i++)
+        {
+            cout << "insert( dane ): " << ht.insert(dane[i]) << endl;
+        }
+
+        inputFile.close();
+    }
+    
+
+
+
+
+
+	return 0;
+}
+
+HashTable::HashTable(int c)
+{
+    t = new string[c];
+    capacity = c;
+    size = 0;
+}
+
+bool HashTable::empty()
+{
+    if (size == 0)
+        return true;
+    else return false;
+}
+
+bool HashTable::full()
+{
+    if (size == capacity)
+        return true;
+    else return false;
+}
+
+int HashTable::hashFunction(string s)
+{
+    int sum = 0;
+    for (int i = 0; i < s.length(); i++)
+    {
+        sum += (int)s[i];
+    }
+    return sum % capacity;
+}
+
+int HashTable::insert(string s)
+{
+    if (full())
+        return -1;
+
+    int counter = 1;
+    int index = hashFunction(s);
+    
+    while (t[index] != "")
+    {
+        if (index + 1 >= capacity)
+            index = -1;
+        index++;
+        counter++;
+    }
+    t[index] = s;
+    size++;
+    return counter;
+}
+
+void HashTable::del(string s)
+{
+    //pusta tablica
+    if (empty())
+        return;
+
+    int index = -1;
+
+    for (int i = 0; i < capacity; i++)
+    {
+        if (s == t[i])
+            index = i;
+    }
+
+    //znaleziony klucz
+    if (index > 0)
+    {
+        t[index] = "";
+        size--;
+    }
+}
+
+ostream& operator<<(ostream& out, HashTable& ht)
+{
+    for (int i = 0; i < ht.capacity; i++)
+    {
+        if (ht.t[i].length() <= 0)
+            continue;
+        else
+            out << i << ". " << ht.t[i] << "\n";
+    }
+    return out;
+}
+
+
+
+
