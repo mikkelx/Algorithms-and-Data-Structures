@@ -73,6 +73,7 @@ int main() {
 	cout << "Predecessor(4) 1 - " << t->predecessor(t->search(4))->getValue() << endl;
 	cout << "Size(root) 11 - " << t->size(t->getRoot()) << endl;
 	cout << "Height(root) 4 - " << t->height(t->getRoot()) << endl;
+	cout << "Clear(root) - \n"; t->clear(t->getRoot());
 	
 
 
@@ -371,4 +372,19 @@ int BSTree::height(Node* p)
 		//wybieramy wieksze
 		return max(leftHieght, rightHeight) + 1;
 	}
+}
+
+void BSTree::clear(Node* p)
+{
+	//puste drzewo
+	if (p == nullptr)
+		return;
+
+	//usuwanie w postorderze
+	//left - right - root
+	clear(p->getLeft());
+	clear(p->getRight());
+
+	cout << "Usuwam - " << p->getValue() << "\n";
+	delete p;
 }
