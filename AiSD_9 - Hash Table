@@ -38,6 +38,9 @@ int main()
         cout << "insert(Chiny): " << h.insert("Chiny") << endl << h;
         cout << "insert(Niemcy): " << h.insert("Niemcy") << endl << h;
         cout << "delete(Niemcy): "; h.del("Niemcy"); cout << endl << h;
+
+        cout << "Search(Chiny) " << h.search("Chiny") << endl;
+        cout << "Search1(Chiny) " << h.search1("Chiny") << endl;
     }
 
     //Zadanie 2 - test
@@ -60,10 +63,6 @@ int main()
         inputFile.close();
     }
     
-
-
-
-
 
 	return 0;
 }
@@ -104,7 +103,7 @@ int HashTable::insert(string s)
     if (full())
         return -1;
 
-    int counter = 1;
+    int counter = 0;
     int index = hashFunction(s);
     
     while (t[index] != "")
@@ -114,6 +113,7 @@ int HashTable::insert(string s)
         index++;
         counter++;
     }
+
     t[index] = s;
     size++;
     return counter;
@@ -139,6 +139,42 @@ void HashTable::del(string s)
         t[index] = "";
         size--;
     }
+}
+
+string HashTable::search(string s)
+{
+    if (empty())
+        return NULL;
+
+    int index = hashFunction(s);
+
+    while (t[index] != s)
+    {
+        if (index + 1 >= capacity)
+            index = -1;
+        index++;
+    }
+
+    return t[index];
+}
+
+int HashTable::search1(string s)
+{
+    if (empty())
+        return -1;
+
+    int index = hashFunction(s);
+    int counter = 0;
+
+    while (t[index] != s)
+    {
+        if (index + 1 >= capacity)
+            index = -1;
+        index++;
+        counter++;
+    }
+
+    return counter;
 }
 
 ostream& operator<<(ostream& out, HashTable& ht)
