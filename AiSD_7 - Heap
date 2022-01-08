@@ -1,3 +1,4 @@
+//Zięba Michał
 #include <iostream>
 #include <algorithm>
 
@@ -33,7 +34,6 @@ public:
     int minimum();                        //zwraca minimalną wartość
     void del(int i);                         //usuwa element na pozycji i
     void decreaseKey(int i, int x);        //zmniejsza wartość na pozycji i, ustawia x    
-
 };
 
 
@@ -42,23 +42,36 @@ int main()
     MinHeap h;
     cout << endl << "empty(): 0 - " << h.empty();
 
-    cout << endl << "full(): 1 - " << h.full();
+    cout << endl << "full(): 0 - " << h.full();
 
     cout << endl<< h;
     cout << endl << "setValue(2,6) "; h.setValue(2, 6);
-
-    /*cout << endl << "setValue(8,5) "; h.setValue(8, 5);
-    cout << endl << h;
-    cout << endl << "getParent(8) 3 - " << h.getParent(8);
-    cout << endl << "getValue(3) 6 - " << h.getValue(3);
-    h.bottomUp(8);
-    cout << endl << "bottomUp(8) - [1 2 4 5 5 4 7 7 6 9 6] - " << h;
-    cout << endl << "getLeft(2) 5 - " << h.getLeft(2);
-    cout << endl << "setValue(2,6) "; h.setValue(2, 6);*/
     cout << endl << h;
     h.topDown(2);
+    cout << endl << "Wlasnosc kopca przywrocona: ";
     cout << endl << h;
+    //przywrocenie poczatkowego kopca
+    h.setValue(5, 4);
 
+    cout << endl << "setValue(2,6) "; h.setValue(2, 6);
+    cout << endl << h;
+    cout << endl << "BottomUp(5): "; h.bottomUp(5);
+    cout << endl << h;
+    cout << endl << "Insert(8) "; h.insert(8);
+    cout << endl << h;
+    cout << endl << "Insert(5) - 1 2 4 6 5 5 7 7 7 9 6 8 6 "; h.insert(5);
+    cout << endl << h;
+    cout << endl << "deleteMin() : 2 5 4 6 6 5 7 7 7 9 6 8 "; h.deleteMin();
+    cout << endl << h;
+    cout << endl << "Minimum() 2 - " << h.minimum();
+    cout << endl << "deleteMin() : 4 5 5 6 6 8 7 7 7 9 6 "; h.deleteMin();
+    cout << endl << h;
+    cout << endl << "del(9) - "; h.del(9);
+    cout << endl << h;
+    cout << endl << "del(9) - "; h.del(9);
+    cout << endl << h;
+    cout << endl << "Decrease Key(6, 4) - 4 5 4 6 6 8 5 7 7"; h.decreaseKey(6, 4);
+    cout << endl << h;
 
 
 
@@ -76,9 +89,9 @@ MinHeap::MinHeap(int c)
 
 MinHeap::MinHeap()
 {
-    kopiec = new int[11];
-    kopiec[0] = 1; kopiec[1] = 2; kopiec[2] = 4; kopiec[3] = 6; kopiec[4] = 5; kopiec[5] = 4; kopiec[6] = 7; kopiec[7] = 7; kopiec[8] = 7; kopiec[9] = 9; kopiec[10] = 6;
-    capacity = 11;
+    kopiec = new int[15];
+    kopiec[0] = 1; kopiec[1] = 2; kopiec[2] = 4; kopiec[3] = 6; kopiec[4] = 5; kopiec[5] = 4; kopiec[6] = 7; kopiec[7] = 7; kopiec[8] = 7; kopiec[9] = 9; kopiec[10] = 6; //11 elementow
+    capacity = 15;
     size = 11;
 }
 
@@ -184,12 +197,55 @@ void MinHeap::bottomUp(int i)
         if (getValue(i) < getValue(p))
         {
             swap(kopiec[i], kopiec[p]);
-            /*int temp = getValue(i);
-            setValue(i, getValue(p));
-            setValue(p, temp);*/
             bottomUp(p);
         }
     }
 }
 
+void MinHeap::insert(int x)
+{
+    //kopiec pelny
+    if (full())
+        return;
 
+    kopiec[size] = x;
+    size++;
+    bottomUp(size-1);
+}
+
+int MinHeap::deleteMin()
+{
+    if (empty())
+        return NULL;
+
+    size -= 1;
+    swap(kopiec[0], kopiec[size]);
+    topDown(0);
+}
+
+int MinHeap::minimum()
+{
+    if (empty())
+        return NULL;
+    else return kopiec[0];
+}
+
+void MinHeap::del(int i)
+{
+    if (empty())
+        return;
+    size -= 1;
+    swap(kopiec[i], kopiec[size]);
+    topDown(i);
+    bottomUp(i);
+}
+
+void MinHeap::decreaseKey(int i, int x)
+{
+    if (i > size - 1 || empty())
+        return;
+
+    kopiec[i] = x;
+    topDown(i);
+    bottomUp(i);
+}
