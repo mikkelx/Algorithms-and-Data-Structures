@@ -1,0 +1,233 @@
+//Zięba Michał
+
+#include <windows.h>
+#include <iostream>
+#include <cstdlib>
+#include <math.h>
+#include <Windows.h>
+
+using namespace std;
+
+void stworz(int n);
+void wypisz(char** choinka, int n);
+void changeColor(int color);
+
+
+int main()
+{
+	srand(time(0));
+
+	cout << "Podaj dlugosc powyzej 4: ";
+	int n = 5;
+	cin >> n;
+	system("cls");
+
+	stworz(n);
+
+	return 0;
+}
+
+void stworz(int n)
+{
+	int lvl1 = n;
+	int lvl2 = n + 4;
+	int lvl3 = n + 8;
+
+	int lvl3Hieght = lvl3 / 2;
+	int lvl2Hieght = lvl3Hieght / 2 + 1;
+	int lvl1Height = lvl3 - lvl2Hieght - lvl3Hieght;
+
+	int punkt_osi = lvl3 / 2 + 1;
+
+	//choinka jako tablica charow lvl3+2 na 3*n
+	char** choinka = new char* [lvl3 + 2];
+	for (int i = 0; i < (lvl3 + 2); i++)
+		choinka[i] = new char[3 * n];
+
+	//pusta tablica
+	for (int i = 0; i < (lvl3+2); i++)
+	{
+		for (int j = 0; j < 3 * n; j++)
+		{
+			choinka[i][j] = ' ';
+		}
+	}
+
+
+	//lvl1
+	int counter = 0;
+	int znaki = 1;
+	for (int i = 0; i < lvl1Height; i++)
+	{
+		for (int j = 0; j < 3 * n; j++)
+		{
+			if (j == punkt_osi && i == 0) // rywaonie 1 poziomu
+			{
+				choinka[i][j] = '#';
+				counter++;
+				break;
+			}
+			else if(i>0)
+			{
+				znaki = 1 + counter * 2;
+				counter++;
+				/*choinka[i][punkt_osi - (znaki / 2)] = '#';
+				choinka[i][punkt_osi + (znaki / 2)] = '#';
+				choinka[i][punkt_osi] = '#';*/
+				for (int x = punkt_osi - (znaki / 2); x <= punkt_osi + (znaki / 2); x++)
+				{
+					choinka[i][x] = '#';
+				}
+				break;
+			}
+
+		}
+	}
+
+	//lvl2
+	counter = 1;
+	for (int i = lvl1Height; i <= lvl3Hieght; i++)
+	{
+		for (int j = 0; j < 3 * n; j++)
+		{
+			if (i == lvl1Height) // rywaonie 1 poziomu
+			{
+				znaki = 3;
+				for (int x = punkt_osi - (znaki / 2); x <= punkt_osi + (znaki / 2); x++)
+				{
+					choinka[i][x] = '#';
+				}
+				counter++;
+				break;
+			}
+			else
+			{
+				znaki = 1 + counter * 2;
+				counter++;
+				for (int x = punkt_osi - (znaki / 2); x <= punkt_osi + (znaki / 2); x++)
+				{
+					choinka[i][x] = '#';
+				}
+				break;
+			}
+
+		}
+	}
+
+	//lvl3
+	counter = 1;
+	for (int i = lvl3Hieght; i < lvl3; i++)
+	{
+		for (int j = 0; j < 3 * n; j++)
+		{
+			if (i == lvl1Height) // rywaonie 1 poziomu
+			{
+				znaki = 3;
+				for (int x = punkt_osi - (znaki / 2); x <= punkt_osi + (znaki / 2); x++)
+				{
+					choinka[i][x] = '#';
+				}
+				counter++;
+				break;
+			}
+			else
+			{
+				znaki = 1 + counter * 2;
+				counter++;
+				for (int x = punkt_osi - (znaki / 2); x <= punkt_osi + (znaki / 2); x++)
+				{
+					choinka[i][x] = '#';
+				}
+				break;
+			}
+
+		}
+	}
+
+	//rysowanie pnia
+	for (int i = lvl3; i < lvl3 + 2; i++)
+	{
+		for (int j = 0; j < 3 * n; j++)
+		{
+			choinka[i][punkt_osi] = '%';
+		}
+	}
+
+	wypisz(choinka, n);
+	cout << endl << "lvl3: " << lvl3;
+}
+
+void wypisz(char** choinka, int n)
+{
+	int lvl3 = n + 8;
+
+	while (1)
+	{
+		for (int i = 0; i < lvl3 + 2; i++)
+		{
+
+			for (int j = 0; j < 3 * n; j++)
+			{
+				if (i == 0) //gwiazda
+				{
+					changeColor(6);
+				}
+				if ((i + j) % 5 == 0 && choinka[i][j] == '#') //ustawienia lancucha czerwonego
+				{
+					changeColor(4);
+					cout << choinka[i][j];
+					changeColor(2);
+					continue;
+				}
+
+				cout << choinka[i][j];
+			}
+			cout << "\n";
+			if (i > (lvl3 - 2)) //kolor pnia
+				changeColor(8);
+			else
+				changeColor(2);  //ustawienie zielonego
+		}
+		changeColor(1);
+		cout << "\n\nWesolych Swiat!!!";
+		Sleep(700);
+		system("cls");
+
+		for (int i = 0; i < lvl3 + 2; i++)
+		{
+
+			for (int j = 0; j < 3 * n; j++)
+			{
+				if (i == 0) //gwiazda
+				{
+					changeColor(6);
+				}
+				if ((i + j) % 5 == 0 && choinka[i][j] == '#') //ustawienia lancucha czerwonego
+				{
+					changeColor(1);
+					cout << choinka[i][j];
+					changeColor(2);
+					continue;
+				}
+
+				cout << choinka[i][j];
+			}
+			cout << "\n";
+			if (i > (lvl3 - 2)) //kolor pnia
+				changeColor(8);
+			else
+				changeColor(2);  //ustawienie zielonego
+		}
+		changeColor(4);
+		cout << "\n\nWesolych Swiat!!!";
+		Sleep(700);
+		system("cls");
+	}
+
+}
+
+void changeColor(int color)
+{
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, color);
+}
