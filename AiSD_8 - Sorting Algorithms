@@ -33,7 +33,7 @@ int main()
 	for (int i = 0; i < proby; i++)
 	{
 
-		int n = 50000;                //przykładowy rozmiar
+		int n = 30000;                //przykładowy rozmiar
 		int* S = new int[n];
 		int* C = new int[n];
 		//generacja i wyświetlenie danych
