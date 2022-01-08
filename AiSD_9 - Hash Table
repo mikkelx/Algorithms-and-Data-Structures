@@ -61,6 +61,8 @@ int main()
         }
 
         inputFile.close();
+
+        cout << "Search1(Mateusz) - ostatania dana w pliku -  " << ht.search1("Mateusz") << endl;
     }
     
 
