@@ -37,10 +37,12 @@ int main()
         cout << "insert(Anglia): " << h.insert("Anglia") << endl << h;
         cout << "insert(Chiny): " << h.insert("Chiny") << endl << h;
         cout << "insert(Niemcy): " << h.insert("Niemcy") << endl << h;
+        cout << "Search1(Niemcy): " << h.search1("Niemcy") << endl;
         cout << "delete(Niemcy): "; h.del("Niemcy"); cout << endl << h;
 
         cout << "Search(Chiny) " << h.search("Chiny") << endl;
         cout << "Search1(Chiny) " << h.search1("Chiny") << endl;
+        cout << endl << h << endl;
     }
 
     //Zadanie 2 - test
@@ -63,6 +65,8 @@ int main()
         inputFile.close();
 
         cout << "Search1(Mateusz) - ostatania dana w pliku -  " << ht.search1("Mateusz") << endl;
+
+        cout << endl << ht;
     }
     
 
@@ -92,6 +96,7 @@ bool HashTable::full()
 
 int HashTable::hashFunction(string s)
 {
+    //funkcja haszująca - sumuje znaki klucza w ASCII i robi moudlo z pojemnosci tablicy
     int sum = 0;
     for (int i = 0; i < s.length(); i++)
     {
@@ -108,9 +113,9 @@ int HashTable::insert(string s)
     int counter = 0;
     int index = hashFunction(s);
     
-    while (t[index] != "")
+    while (t[index] != "")    //probokowanie liniowe - jezeli zajete miejsce to przesuwamy indeks o jeden
     {
-        if (index + 1 >= capacity)
+        if (index + 1 >= capacity) //jesli skonczyly sie indeksy robimy zapętlenie
             index = -1;
         index++;
         counter++;
@@ -146,11 +151,11 @@ void HashTable::del(string s)
 string HashTable::search(string s)
 {
     if (empty())
-        return NULL;
+        return "";
 
     int index = hashFunction(s);
 
-    while (t[index] != s)
+    while (t[index] != s)  //probkowanie liniowe jak we wstawianiu
     {
         if (index + 1 >= capacity)
             index = -1;
@@ -184,7 +189,7 @@ ostream& operator<<(ostream& out, HashTable& ht)
     for (int i = 0; i < ht.capacity; i++)
     {
         if (ht.t[i].length() <= 0)
-            continue;
+            out << i << ". \n";
         else
             out << i << ". " << ht.t[i] << "\n";
     }
